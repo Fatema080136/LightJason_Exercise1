@@ -1,7 +1,5 @@
 Exercise 1
 
-Build Jar: mvn package
-
 Execute Jar:
 java -jar target\myagentapp-0.0.1-SNAPSHOT.jar bose.asl dilbert.asl 5
 
