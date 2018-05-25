@@ -1,4 +1,4 @@
-#Exercise 1
+Exercise 1
 
 Build Jar: mvn package
 

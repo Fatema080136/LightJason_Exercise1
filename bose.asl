@@ -1,9 +1,9 @@
 // initial-goal
-!main.
+!initial.
 
 
 // initial plan (triggered by the initial goal)
-+!main <-
++!initial <-
     generic/print("Agent Name: Bose");
     NumberData = 5;
     //asked to Dilbert_Agent for calculating factorial of NumberData

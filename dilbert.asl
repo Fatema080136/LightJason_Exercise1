@@ -1,6 +1,6 @@
-!main.
+!initial.
 
-+!main <-
++!initial <-
     generic/print( "Agent Name: Dilbert" )
 .
 
