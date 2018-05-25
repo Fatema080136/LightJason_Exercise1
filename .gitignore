@@ -5,4 +5,5 @@
 !*.md
 !*.java
 !*.asl
+!*.jar
 !src/checkstyle/*.xml
