@@ -28,7 +28,9 @@ import sun.misc.Unsafe;
 import java.io.FileInputStream;
 import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.LogManager;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -42,7 +44,7 @@ import java.util.stream.Stream;
  */
 final class App
 {
-
+    private CopyOnWriteArrayList<MyAgent> m_agent = new CopyOnWriteArrayList<>();
     static
     {
         // disable logger
@@ -66,31 +68,31 @@ final class App
     {
         disableWarning();
         if ( p_args.length < 2 )
-            throw new RuntimeException( "arguments are not set: ASL script, number of agents" );
+            throw new RuntimeException( "arguments are not set: ASL script, number of cycles" );
 
         // parameter of the command-line arguments:
         // 1. ASL file for The Bose agent
         // 2. ASL file for one Dilbert agent
         // 3. number of iterations (if not set maximum integer)
-        final Set<MyAgent> l_agents;
+        Set<MyAgent> l_agents = new HashSet<>();
         final CSend m_send = new CSend();
         try
-            (
-                final FileInputStream l_initiatorstream = new FileInputStream( p_args[0] );
-				final FileInputStream l_followerstream = new FileInputStream( p_args[1] );
-            )
         {
+            final FileInputStream l_initiatorstream = new FileInputStream( p_args[0] );
             String l_initiatorname = p_args[0].toString().replace(".asl", "");
-            String l_respondername = p_args[1].toString().replace(".asl", "");
 
-            // agent factory with generating an unmodifyable set
-            l_agents = Stream.concat(
-                    new MyAgentGenerator( l_initiatorstream, m_send, l_initiatorname )
-                    .generatemultiple( 1 ),
-                    new MyAgentGenerator( l_followerstream, m_send, l_respondername )
-                    .generatemultiple( 1 )
-            ).collect( Collectors.toSet() );
-            
+            if ( p_args.length > 2 )
+            {
+                final FileInputStream l_followerstream = new FileInputStream( p_args[1] );
+                String l_respondername = p_args[1].toString().replace(".asl", "");
+
+                l_agents.add( new MyAgentGenerator( l_followerstream, m_send, l_respondername )
+                        .generatesingle( 1 ) );
+            }
+
+            l_agents.add( new MyAgentGenerator( l_initiatorstream, m_send, l_initiatorname )
+                    .generatesingle( 1 ) );
+
         }
         catch ( final Exception l_exception )
         {
@@ -100,11 +102,12 @@ final class App
         }
 
         // runtime call (with parallel execution)
+
         IntStream
             .range(
                 0,
                 p_args.length < 3
-                ? Integer.MAX_VALUE
+                ? Integer.parseInt( p_args[1] )
                 : Integer.parseInt( p_args[2] )
             )
             .forEach( j -> l_agents.parallelStream()
