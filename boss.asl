@@ -1,13 +1,14 @@
-// initial-goal
-!initial.
+//asl for boss agent
+
+// initial goal
+!run.
 
 
-// initial plan (triggered by the initial goal)
-+!initial <-
-    generic/print("Agent Name: Boss");
-    NumberData = 5;
-    //asked to Dilbert_Agent for calculating factorial of NumberData
-    message/send( "dilbert", NumberData )
+// initial plan
++!run <-
+    generic/print("Hello, I am the Boss");
+
+    message/send( "dilbert", "delegate", "factorial", 10 )
 .
 
 

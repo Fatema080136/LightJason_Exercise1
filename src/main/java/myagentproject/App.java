@@ -67,8 +67,6 @@ final class App
     public static void main( final String[] p_args )
     {
         disableWarning();
-        if ( p_args.length < 2 )
-            throw new RuntimeException( "arguments are not set: ASL script, number of cycles" );
 
         // parameter of the command-line arguments:
         // 1. ASL file for The Bose agent
@@ -81,7 +79,7 @@ final class App
             final FileInputStream l_initiatorstream = new FileInputStream( p_args[0] );
             String l_initiatorname = p_args[0].toString().replace(".asl", "");
 
-            if ( p_args.length > 2 )
+            if ( p_args.length > 1 && p_args[1].endsWith(".asl") )
             {
                 final FileInputStream l_followerstream = new FileInputStream( p_args[1] );
                 String l_respondername = p_args[1].toString().replace(".asl", "");
@@ -106,9 +104,10 @@ final class App
         IntStream
             .range(
                 0,
-                p_args.length < 3
-                ? Integer.parseInt( p_args[1] )
-                : Integer.parseInt( p_args[2] )
+                p_args.length == 3
+				? Integer.parseInt( p_args[2] )
+                :( ( p_args.length == 2 && p_args[1].endsWith(".asl") )? 50
+                        : ( p_args.length < 2 ? 50 : Integer.parseInt( p_args[1] ) ) )
             )
             .forEach( j -> l_agents.parallelStream()
                                    .forEach( i ->

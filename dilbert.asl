@@ -1,9 +1,21 @@
-!initial.
+//asl for dilbert agent
 
-+!initial <-
-    generic/print( "Agent Name: Dilbert" )
+!run.
+
++!run <-
+    generic/print( "I am Dilbert" )
 .
 
-+!message/receive( message(M), from(F) ) <-
-    generic/print( "Message: get request to calculate factorial of", M, "from", F )
++!message/receive( message(Type, Op, Val), from(S) ) <-
+    generic/print( "received message" );
+    !process(Type, Op, Val, S)
+.
+
++!process(Type, Op, Val, Sdr)
+: bool/equal(Type, "delegate") &&
+  bool/equal(Op, "factorial") &&
+  generic/type/isnumeric(Val)
+  <- generic/print( "task received" )
+: true <-
+  generic/print( "can't Handle request" )
 .
